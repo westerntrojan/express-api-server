@@ -11,5 +11,5 @@ server.timeout = 5000;
 
 const port = process.env.PORT || 8080;
 server.listen(port, () =>
-	logger.info(`Server listening on http://127.0.0.1:${port}. Started worker ${pid}`)
+	logger.info(`Server listening on http://127.0.0.1:${port}. Started worker ${pid}`),
 );

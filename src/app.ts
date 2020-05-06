@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 
 import router from './router';
 import {getLogger} from './utils/logger';
+import './db';
 
 dotenv.config();
 const logger = getLogger(module);
@@ -19,7 +20,7 @@ if (isProd) {
 }
 
 // router
-app.use('/', router);
+app.use('/api', router);
 
 // 404
 app.use((req: Request, res: Response) => {
