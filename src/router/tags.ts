@@ -26,9 +26,7 @@ router.get('/:slug', async (req: Request, res: Response, next: NextFunction) => 
 
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const {name, articleId} = req.query;
-
-		const tag = await Tag.create({name, articleId});
+		const tag = await Tag.create(req.query);
 
 		res.json({tag});
 	} catch (err) {

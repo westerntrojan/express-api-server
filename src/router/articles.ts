@@ -2,15 +2,29 @@ import {Router, Request, Response, NextFunction} from 'express';
 import {Op} from 'sequelize';
 import slugify from 'slugify';
 
-import {Article} from '../models';
+import {Article, Comment, Tag} from '../models';
 
 const router = Router();
 
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const articles = await Article.findAll({
-			include: ['comments'],
+			attributes: ['id', 'title', 'text', 'slug', 'createdAt'],
 			order: [['createdAt', 'DESC']],
+			include: [
+				{
+					model: Tag,
+					as: 'tags',
+					attributes: ['name', 'slug'],
+					through: {attributes: []},
+				},
+				{
+					model: Comment,
+					as: 'comments',
+					attributes: ['id', 'text', 'articleId', 'createdAt'],
+					order: [['createdAt', 'DESC']],
+				},
+			],
 		});
 
 		res.json({articles});
@@ -38,6 +52,7 @@ router.get('/search', async (req: Request, res: Response, next: NextFunction) =>
 					},
 				],
 			},
+			order: [['createdAt', 'DESC']],
 		});
 
 		res.json({articles});
@@ -50,8 +65,14 @@ router.get('/:slug', async (req: Request, res: Response, next: NextFunction) => 
 	try {
 		const article = await Article.findOne({
 			where: {slug: req.params.slug},
-			include: ['comments'],
 		});
+
+		if (article) {
+			const comments = await article.getComments();
+			const tags = await article.getTags();
+
+			return res.json({...article.toJSON(), tags, comments});
+		}
 
 		res.json({article});
 	} catch (err) {
@@ -61,9 +82,15 @@ router.get('/:slug', async (req: Request, res: Response, next: NextFunction) => 
 
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const {title, text} = req.query;
+		const article = await Article.create(req.query);
 
-		const article = await Article.create({title, text});
+		if (req.query.tag) {
+			const tag = await Tag.findOne({where: {slug: req.query.tag}});
+
+			if (tag) {
+				await article.addTag(tag);
+			}
+		}
 
 		res.json({article});
 	} catch (err) {
@@ -73,21 +100,29 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 
 router.put('/:articleId', async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const {title, text} = req.query;
-
-		const slug = slugify(String(title), {
+		const slug = slugify(String(req.query.title), {
 			lower: true,
 			replacement: '-',
 		});
 
-		const article = await Article.update(
-			{title, text, slug},
+		await Article.update(
+			{...req.query, slug},
 			{
 				where: {
 					id: req.params.articleId,
 				},
 			},
 		);
+
+		const article = await Article.findByPk(String(req.params.articleId));
+
+		if (req.query.tag) {
+			const tag = await Tag.findOne({where: {slug: req.query.tag}});
+
+			if (article && tag) {
+				await article.addTag(tag);
+			}
+		}
 
 		res.json({article});
 	} catch (err) {

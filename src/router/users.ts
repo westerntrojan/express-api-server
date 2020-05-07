@@ -6,7 +6,9 @@ const router = Router();
 
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const users = await User.findAll();
+		const users = await User.findAll({
+			include: ['article'],
+		});
 
 		res.json({users});
 	} catch (err) {
@@ -26,9 +28,7 @@ router.get('/:slug', async (req: Request, res: Response, next: NextFunction) => 
 
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const {name} = req.query;
-
-		const user = await User.create({name});
+		const user = await User.create(req.query);
 
 		res.json({user});
 	} catch (err) {
