@@ -18,7 +18,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
 
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const category = await Category.create(req.query);
+		const category = await Category.create(req.body);
 
 		res.json({category});
 	} catch (err) {

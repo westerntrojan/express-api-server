@@ -1,32 +1,22 @@
-import {Model, DataTypes} from 'sequelize';
+import {Table, Column, Model, DataType, ForeignKey, BelongsTo} from 'sequelize-typescript';
 
-import sequelize from '../db';
+import Article from './Article';
 
-class Comment extends Model {
-	public id!: number;
-	public text!: string;
+@Table({
+	tableName: 'comments',
+})
+class Comment extends Model<Comment> {
+	@Column({
+		type: DataType.TEXT,
+	})
+	text!: string;
 
-	public readonly createdAt!: Date;
-	public readonly updatedAt!: Date;
+	@ForeignKey(() => Article)
+	@Column
+	articleId!: number;
+
+	@BelongsTo(() => Article)
+	article!: Article;
 }
-
-Comment.init(
-	{
-		id: {
-			type: DataTypes.INTEGER,
-			autoIncrement: true,
-			primaryKey: true,
-			allowNull: false,
-		},
-		text: {
-			type: DataTypes.TEXT,
-			allowNull: false,
-		},
-	},
-	{
-		sequelize,
-		tableName: 'comments',
-	},
-);
 
 export default Comment;

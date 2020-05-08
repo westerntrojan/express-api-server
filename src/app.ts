@@ -1,6 +1,7 @@
 import express, {Application, Request, Response, NextFunction} from 'express';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import bodyParser from 'body-parser';
 
 import router from './router';
 import {getLogger} from './utils/logger';
@@ -18,6 +19,8 @@ if (isProd) {
 } else {
 	app.use(morgan('dev'));
 }
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 // router
 app.use('/api', router);

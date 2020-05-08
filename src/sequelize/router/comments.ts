@@ -21,11 +21,11 @@ router.get('/:commentId', async (req: Request, res: Response) => {
 });
 
 router.post('/', async (req: Request, res: Response) => {
-	const article = await Article.findByPk(String(req.query.articleId));
+	const article = await Article.findByPk(String(req.body.articleId));
 
 	if (article) {
 		const comment = await article.createComment({
-			text: String(req.query.text),
+			text: String(req.body.text),
 		});
 
 		return res.json({comment});

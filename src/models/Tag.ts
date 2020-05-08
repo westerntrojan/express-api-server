@@ -1,45 +1,44 @@
-import {Model, DataTypes} from 'sequelize';
+import {
+	Table,
+	Column,
+	Model,
+	DataType,
+	BeforeValidate,
+	BelongsToMany,
+	// DefaultScope,
+} from 'sequelize-typescript';
 import slugify from 'slugify';
 
-import sequelize from '../db';
+import Article from './Article';
+import ArticleTag from './ArticleTag';
 
-class Tag extends Model {
-	public id!: number;
-	public name!: string;
-	public slug!: string;
+// @DefaultScope(() => ({
+// 	attributes: ['id', 'title', 'text'],
+// }))
+@Table({
+	tableName: 'tags',
+})
+class Tag extends Model<Tag> {
+	@Column({
+		type: DataType.STRING,
+	})
+	name!: string;
 
-	public readonly createdAt!: Date;
-	public readonly updatedAt!: Date;
+	@Column({
+		type: DataType.STRING,
+	})
+	slug!: string;
+
+	@BelongsToMany(() => Article, () => ArticleTag)
+	articles!: Article[];
+
+	@BeforeValidate
+	static addSlug(tag: Tag): void {
+		tag.slug = slugify(tag.name, {
+			lower: true,
+			replacement: '-',
+		});
+	}
 }
-
-Tag.init(
-	{
-		id: {
-			type: DataTypes.INTEGER,
-			autoIncrement: true,
-			primaryKey: true,
-			allowNull: false,
-		},
-		name: {
-			type: new DataTypes.STRING(255),
-			allowNull: false,
-		},
-		slug: {
-			type: new DataTypes.STRING(255),
-			allowNull: false,
-		},
-	},
-	{
-		sequelize,
-		tableName: 'tags',
-	},
-);
-
-Tag.beforeValidate((tag: Tag) => {
-	tag.slug = slugify(tag.name, {
-		lower: true,
-		replacement: '-',
-	});
-});
 
 export default Tag;

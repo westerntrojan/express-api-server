@@ -82,10 +82,10 @@ router.get('/:slug', async (req: Request, res: Response, next: NextFunction) => 
 
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const article = await Article.create(req.query);
+		const article = await Article.create(req.body);
 
-		if (req.query.tag) {
-			const tag = await Tag.findOne({where: {slug: req.query.tag}});
+		if (req.body.tag) {
+			const tag = await Tag.findOne({where: {slug: req.body.tag}});
 
 			if (tag) {
 				await article.addTag(tag);
@@ -100,13 +100,13 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 
 router.put('/:articleId', async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const slug = slugify(String(req.query.title), {
+		const slug = slugify(String(req.body.title), {
 			lower: true,
 			replacement: '-',
 		});
 
 		await Article.update(
-			{...req.query, slug},
+			{...req.body, slug},
 			{
 				where: {
 					id: req.params.articleId,
@@ -116,8 +116,8 @@ router.put('/:articleId', async (req: Request, res: Response, next: NextFunction
 
 		const article = await Article.findByPk(String(req.params.articleId));
 
-		if (req.query.tag) {
-			const tag = await Tag.findOne({where: {slug: req.query.tag}});
+		if (req.body.tag) {
+			const tag = await Tag.findOne({where: {slug: req.body.tag}});
 
 			if (article && tag) {
 				await article.addTag(tag);

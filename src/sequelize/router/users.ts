@@ -1,14 +1,16 @@
 import {Router, Request, Response, NextFunction} from 'express';
 
-import {Tag} from '../models';
+import {User} from '../models';
 
 const router = Router();
 
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const tags = await Tag.findAll();
+		const users = await User.findAll({
+			include: ['article'],
+		});
 
-		res.json({tags});
+		res.json({users});
 	} catch (err) {
 		next(err);
 	}
@@ -16,9 +18,9 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
 
 router.get('/:slug', async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const tag = await Tag.findOne({where: {slug: req.params.slug}, raw: true});
+		const user = await User.findOne({where: {slug: req.params.slug}, raw: true});
 
-		res.json({tag});
+		res.json({user});
 	} catch (err) {
 		next(err);
 	}
@@ -26,9 +28,9 @@ router.get('/:slug', async (req: Request, res: Response, next: NextFunction) => 
 
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const tag = await Tag.create(req.query);
+		const user = await User.create(req.body);
 
-		res.json({tag});
+		res.json({user});
 	} catch (err) {
 		next(err);
 	}

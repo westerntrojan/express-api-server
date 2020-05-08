@@ -1,18 +1,14 @@
-import {Sequelize} from 'sequelize-typescript';
+import {Sequelize} from 'sequelize';
 import {Logger} from 'winston';
 
 import {getLogger} from './utils/logger';
 
 const logger = getLogger(module);
 
-const sequelize = new Sequelize({
-	database: 'postgres',
-	dialect: 'postgres',
-	username: 'postgres',
-	password: 'postgres',
+const sequelize = new Sequelize('postgres', 'postgres', 'postgres', {
 	host: 'localhost',
+	dialect: 'postgres',
 	logging: (msg: string): Logger => logger.debug(msg),
-	models: [__dirname + '/models'], // or [Player, Team]
 });
 
 sequelize
@@ -25,3 +21,5 @@ sequelize
 	.authenticate()
 	.then(() => logger.info('PostgreSQL [auth]'))
 	.catch((err: Error) => logger.error(err.message));
+
+export default sequelize;
