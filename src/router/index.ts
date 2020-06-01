@@ -2,7 +2,6 @@ import {Router, Request, Response, NextFunction} from 'express';
 
 import Article from '../models/Article';
 import Tag from '../models/Tag';
-import Comment from '../models/Comment';
 
 const router = Router();
 

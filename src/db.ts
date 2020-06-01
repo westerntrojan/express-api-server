@@ -16,12 +16,9 @@ const sequelize = new Sequelize({
 });
 
 sequelize
-	.sync({force: true})
-	// .sync()
+	// .sync({force: true})
+	.sync()
 	.then(() => logger.info('PostgreSQL [sync]'))
 	.catch((err: Error) => logger.error(err.message));
 
-sequelize
-	.authenticate()
-	.then(() => logger.info('PostgreSQL [auth]'))
-	.catch((err: Error) => logger.error(err.message));
+export default sequelize;
