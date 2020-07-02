@@ -22,6 +22,3 @@ yarn-error.log*
 .vscode
 logs
 public
-ecosystem.config.js
-src/example
-src/test
