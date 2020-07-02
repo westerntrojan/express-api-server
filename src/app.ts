@@ -1,6 +1,5 @@
 import express, {Application, Request, Response, NextFunction} from 'express';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import moment from 'moment';
 
@@ -8,7 +7,6 @@ import router from './router';
 import {getLogger} from './utils/logger';
 import sequelize from './db';
 
-dotenv.config();
 const logger = getLogger(module);
 const isProd = process.env.NODE_ENV === 'production';
 

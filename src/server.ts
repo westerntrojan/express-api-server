@@ -1,4 +1,5 @@
 import http from 'http';
+import './env';
 
 import {getLogger} from './utils/logger';
 import app from './app';
